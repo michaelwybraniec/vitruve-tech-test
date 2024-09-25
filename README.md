@@ -1,2 +1,2 @@
 # vitruve-tech-test
-A wonderful "ONE-FRONT" full-stack app for Vitruve in Madrid! 💃 🇪🇸 🌎
+Welcome to "vitruve-tech-test", a wonderful "ONE-FRONT" full-stack webapp for Vitruve in Madrid! 💃 🇪🇸

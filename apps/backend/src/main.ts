@@ -1,12 +1,12 @@
-import { config } from 'dotenv';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import { athletesRouter } from './controllers/athletes.controller';
 import { metricsRouter } from './controllers/metrics.controller';
-
-config();
 
 const app = express();
 const prisma = new PrismaClient();
@@ -31,6 +31,76 @@ const swaggerOptions = {
         description: 'Development server',
       },
     ],
+    components: {
+      schemas: {
+        Athlete: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+            },
+            name: {
+              type: 'string',
+            },
+            age: {
+              type: 'integer',
+            },
+            team: {
+              type: 'string',
+            },
+          },
+        },
+        AthleteWithMetrics: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+            },
+            name: {
+              type: 'string',
+            },
+            age: {
+              type: 'integer',
+            },
+            team: {
+              type: 'string',
+            },
+            metrics: {
+              type: 'array',
+              items: {
+                $ref: '#/components/schemas/Metric',
+              },
+            },
+          },
+        },
+        Metric: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              format: 'uuid',
+            },
+            metricType: {
+              type: 'string',
+              description: 'The type of metric (e.g., speed, strength, stamina)',
+            },
+            value: {
+              type: 'number',
+            },
+            unit: {
+              type: 'string',
+              description: 'The unit of measurement (e.g., kg, meters/second)',
+            },
+            timestamp: {
+              type: 'string',
+              format: 'date-time',
+            },
+          },
+        },
+      },
+    },
   },
   apis: ['./apps/backend/src/controllers/*.ts'],
 };

@@ -1,27 +1,39 @@
-version: '3.8'
-
 services:
   backend:
     build:
-      context: ./apps/backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/backend/Dockerfile
+      args:
+        - DATABASE_URL=postgresql://michaelwybraniec:finedockerpassword@db:5432/vitruve_tech_test?schema=public
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/vitruve_tech_test
+      - DATABASE_URL=postgresql://michaelwybraniec:finedockerpassword@db:5432/vitruve_tech_test?schema=public
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    command: >
+      /bin/sh -c "
+      yarn prisma migrate deploy &&
+      yarn prisma generate &&
+      node dist/apps/backend/main.js
+      "
 
   db:
     image: postgres:14
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=michaelwybraniec
+      - POSTGRES_PASSWORD=finedockerpassword
       - POSTGRES_DB=vitruve_tech_test
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U michaelwybraniec"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   postgres_data:

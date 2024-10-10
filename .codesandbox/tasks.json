@@ -1,0 +1,56 @@
+{
+  // These tasks will run in order when initializing your CodeSandbox project.
+  "setupTasks": [
+    { "command": "yarn install", "name": "Install Dependencies" },
+    { "command": "yarn backend:set", "name": "Backend Set" },
+    { "command": "yarn prisma:studio", "name": "Preview Database" }
+  ],
+
+  // These tasks can be run from CodeSandbox. Running one will open a log in the app.
+  "tasks": {
+    "backend:set": {
+      "name": "backend:set",
+      "command": "yarn backend:set"
+    },
+    "backend:start": {
+      "name": "backend:start",
+      "command": "yarn backend:start"
+    },
+    "backend:build": {
+      "name": "backend:build",
+      "command": "yarn backend:build"
+    },
+    "backend:test": {
+      "name": "backend:test",
+      "command": "yarn backend:test"
+    },
+    "backend:lint": {
+      "name": "backend:lint",
+      "command": "yarn backend:lint"
+    },
+    "backend:e2e": {
+      "name": "backend:e2e",
+      "command": "yarn backend:e2e"
+    },
+    "prisma:generate": {
+      "name": "prisma:generate",
+      "command": "yarn prisma:generate"
+    },
+    "prisma:migrate": {
+      "name": "prisma:migrate",
+      "command": "yarn prisma:migrate"
+    },
+    "prisma:studio": {
+      "name": "prisma:studio",
+      "command": "yarn prisma:studio"
+    },
+    "prisma:seed": {
+      "name": "prisma:seed",
+      "command": "yarn prisma:seed"
+    },
+    "db:setup": {
+      "name": "db:setup",
+      "command": "yarn db:setup"
+    }
+  }
+}

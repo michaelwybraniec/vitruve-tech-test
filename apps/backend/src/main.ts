@@ -47,6 +47,10 @@ app.doc('/docs/openapi.json', {
   ],
 });
 
+app.get('/', (c) => {
+  return c.redirect('/docs');
+});
+
 // Swagger UI
 app.get('/docs', swaggerUI({ url: '/docs/openapi.json' }));
 

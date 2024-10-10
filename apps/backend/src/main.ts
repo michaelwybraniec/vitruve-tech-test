@@ -1,122 +1,72 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
-
-import express from 'express';
-import { PrismaClient } from '@prisma/client';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc from 'swagger-jsdoc';
+import { OpenAPIHono } from '@hono/zod-openapi';
+import { swaggerUI } from '@hono/swagger-ui';
 import { athletesRouter } from './controllers/athletes.controller';
 import { metricsRouter } from './controllers/metrics.controller';
+import { serve } from '@hono/node-server';
+import { PrismaClient } from '@prisma/client';
 
-const app = express();
-const prisma = new PrismaClient();
+const port = Number(process.env.PORT) || 3000;
+const apiPrefix = process.env.API_PREFIX || '/';
 
-app.use(express.json());
+const app = new OpenAPIHono();
 
-const port = process.env.PORT || 3000;
-const apiPrefix = process.env.API_PREFIX || '/api';
-
-// Swagger setup
-const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Vitruve-tech-test API',
-      version: '1.0.0',
-      description: 'API for managing athletes and their performance metrics',
-    },
-    servers: [
-      {
-        url: `http://localhost:${port}${apiPrefix}`,
-        description: 'Development server',
-      },
-    ],
-    components: {
-      schemas: {
-        Athlete: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              format: 'uuid',
-            },
-            name: {
-              type: 'string',
-            },
-            age: {
-              type: 'integer',
-            },
-            team: {
-              type: 'string',
-            },
-          },
-        },
-        AthleteWithMetrics: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              format: 'uuid',
-            },
-            name: {
-              type: 'string',
-            },
-            age: {
-              type: 'integer',
-            },
-            team: {
-              type: 'string',
-            },
-            metrics: {
-              type: 'array',
-              items: {
-                $ref: '#/components/schemas/Metric',
-              },
-            },
-          },
-        },
-        Metric: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              format: 'uuid',
-            },
-            metricType: {
-              type: 'string',
-              description: 'The type of metric (e.g., speed, strength, stamina)',
-            },
-            value: {
-              type: 'number',
-            },
-            unit: {
-              type: 'string',
-              description: 'The unit of measurement (e.g., kg, meters/second)',
-            },
-            timestamp: {
-              type: 'string',
-              format: 'date-time',
-            },
-          },
-        },
-      },
+// Initialize Prisma client
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
     },
   },
-  apis: ['./apps/backend/src/controllers/*.ts'],
-};
+});
 
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
-app.use(`${apiPrefix}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Middleware to attach Prisma client to context
+app.use('*', async (c, next) => {
+  (c as any).set('prisma', prisma);
+  await next();
+});
 
 // Use controllers
-app.use(`${apiPrefix}/athletes`, athletesRouter);
-app.use(`${apiPrefix}/metrics`, metricsRouter);
+app.route(`${apiPrefix}/athletes`, athletesRouter);
+app.route(`${apiPrefix}/metrics`, metricsRouter);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  console.log(`API available at http://localhost:${port}${apiPrefix}`);
-  console.log(`Swagger documentation available at http://localhost:${port}${apiPrefix}/api-docs`);
+// OpenAPI configuration
+app.doc('/docs/openapi.json', {
+  openapi: '3.1.0',
+  info: {
+    title: 'Vitruve-tech-test API',
+    version: '1.0.0',
+    description: 'API for managing athletes and their performance metrics',
+  },
+  servers: [
+    {
+      url: `http://localhost:${port}${apiPrefix}`,
+      description: 'Development server',
+    },
+  ],
 });
+
+// Swagger UI
+app.get('/docs', swaggerUI({ url: '/docs/openapi.json' }));
+
+// Error handling middleware
+app.onError((err, c) => {
+  console.error('Unhandled error:', err);
+  return c.json({ error: 'Internal Server Error' }, 500);
+});
+
+serve(
+  {
+    fetch: app.fetch,
+    port,
+  },
+  () => {
+    console.log(`Server is running on port ${port}`);
+    console.log(`API available at http://localhost:${port}${apiPrefix}`);
+    console.log(`Swagger UI available at http://localhost:${port}/docs`);
+  }
+);
 
 // Graceful shutdown
 process.on('SIGINT', async () => {

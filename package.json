@@ -22,7 +22,7 @@
     "@hono/zod-openapi": "^0.16.4",
     "@hono/zod-validator": "^0.4.1",
     "@nrwl/next": "^18.0.2",
-    "@nrwl/webpack": "^19.5.1",
+    "@nrwl/webpack": "^19.8.14",
     "@nx/next": "^18.0.2",
     "@nx/webpack": "^19.5.1",
     "@prisma/client": "^5.20.0",

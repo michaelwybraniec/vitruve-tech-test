@@ -25,7 +25,7 @@
     "@nrwl/webpack": "^19.5.1",
     "@nx/next": "^18.0.2",
     "@nx/webpack": "^19.5.1",
-    "@prisma/client": "^5.20.0",
+    "@prisma/client": "^5.22.0",
     "axios": "^1.6.0",
     "express": "^4.21.1",
     "hono": "^4.6.3",

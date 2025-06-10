@@ -24,7 +24,7 @@
     "@nrwl/next": "^18.0.2",
     "@nrwl/webpack": "^19.5.1",
     "@nx/next": "^18.0.2",
-    "@nx/webpack": "^19.5.1",
+    "@nx/webpack": "^20.7.1",
     "@prisma/client": "^5.20.0",
     "axios": "^1.6.0",
     "express": "^4.21.1",
@@ -35,7 +35,7 @@
     "react-router-dom": "6.11.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
-    "webpack-dev-server": "^5.1.0",
+    "webpack-dev-server": "^5.2.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
